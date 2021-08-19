@@ -1,0 +1,65 @@
+import json
+from difflib import get_close_matches
+
+#stores the data of the json file into a variable
+data = json.load(open("dictionary/data.json"))
+
+#creating a function to do what we want
+def translate(w):
+    #converts the characters to lower
+    w = w.lower()
+    z = w.capitalize()
+    x = w.upper()
+
+    #if we can find the called input in the data, it will just execute the definition
+    if w in data:
+        return data[w]
+
+    #in the case of a capitalized noun like Paris
+    elif z in data:
+        return data[z]
+   
+    #need a case for acronyms like USA or NATO
+    elif x in data:
+        return data[x]
+
+    #we want to have a elif statement that be smart enough to know if you had a spelling error
+    elif len(get_close_matches(w, data.keys())) > 0:
+    #if you do not add a n = 3 after data.keys(), ex: et_close_matches(w, data.keys(), n=3
+    #it will bring all the closest ones at a default of 3, but it will list them at most similarity
+       
+        #now that there is a [0] after data.keys it brings the closest one only to the front
+        yn = input("Did you mean %s instead? Please input Y for yes or N for no: " % get_close_matches(w, data.keys())[0])
+        
+        #converts the answer to lower case
+        yn = yn.lower()
+        
+        #this is the case that returns the guessed word if you said yes
+        if yn == ("y"):
+            return(data[get_close_matches(w, data.keys())[0]])
+
+        elif yn == ("n"):
+            return "The word %s doesn't exist. Please double check it." % w
+
+        else:
+            return "We do not understand your entry of: %s " % yn
+
+    else:
+        return "The word: %s, doesn't exist. Please double check it." % w
+
+#asks for input of word you want defined
+word = input("enter words: ")
+
+#calls the definition
+output = translate(word)
+
+#changes output of list to a readable string
+if type(output) == list:
+    for i in output:
+        print(i)
+
+else:
+    print(output)
+
+#you could do this method if you just wanted to call it, but it will not be as readable to human eye
+#print(translate(word))
